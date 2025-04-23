@@ -30,26 +30,26 @@ export default function MovieDetails() {
   if (!movie) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className='bg-gray-800 '>
-    <div className="p-4 max-w-4xl  mx-auto ">
-      <div className=' flex flex-col justify-center items-center'>
-      <img
-        src={movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x445'}
-        alt={movie.Title}
-        className="w-64 mb-4  "
-      />
-      
-      <div className='bg-green-500  md:max-w-[70%] p-6'>
-      <h1 className="text-2xl font-bold text-center mb-2">{movie.Title}</h1>
-      <p className='font-semibold'><strong>Year:</strong> {movie.Year}</p>
-      <p className='font-semibold'><strong>Genre:</strong> {movie.Genre}</p>
-      <p className='font-semibold'><strong>Plot:</strong> {movie.Plot}</p>
-      <p className='font-semibold'><strong>Director:</strong> {movie.Director}</p>
-      <p className='font-semibold'><strong>Actors:</strong> {movie.Actors}</p>
-      <p className='font-semibold'><strong>IMDb Rating:</strong> {movie.imdbRating}</p>
-      </div>
-      </div>
+    <div className="min-h-screen bg-gray-800 text-white flex items-center justify-center py-10">
+      <div className="max-w-4xl w-full px-4">
+        <div className="flex flex-col items-center">
+          <img
+            src={movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x445'}
+            alt={movie.Title}
+            className="w-64 mb-4"
+          />
+          <div className="bg-green-500 p-6 rounded-lg text-black md:max-w-[70%]">
+            <h1 className="text-2xl font-bold text-center mb-2">{movie.Title}</h1>
+            <p><strong>Year:</strong> {movie.Year}</p>
+            <p><strong>Genre:</strong> {movie.Genre}</p>
+            <p><strong>Plot:</strong> {movie.Plot}</p>
+            <p><strong>Director:</strong> {movie.Director}</p>
+            <p><strong>Actors:</strong> {movie.Actors}</p>
+            <p><strong>IMDb Rating:</strong> {movie.imdbRating}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
+  
 }

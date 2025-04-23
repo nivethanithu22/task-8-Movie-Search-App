@@ -23,6 +23,7 @@ export default function Home() {
         setError(null);
       } else {
         setMovies([]);
+        setTotalResults(0);
         setError(data.Error);
       }
     } catch (err) {
@@ -35,7 +36,7 @@ export default function Home() {
   }, [query, type, page]);
 
   return (
-    <div  className='bg-gray-800'>
+    <div  className='min-h-screen bg-gray-800'>
       <div className="p-4 max-w-5xl mx-auto">
       <SearchBar onSearch={(q) => {  console.log("Search term is:", q); setQuery(q); setPage(1); }} />
       <FilterDropdown selectedType={type} onChange={(t) => { setType(t); setPage(1); }} />
@@ -43,9 +44,10 @@ export default function Home() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {movies.map((movie) => <MovieCard key={movie.imdbID} movie={movie} />)}
       </div>
-      {totalResults > 10 && (
-        <Pagination currentPage={page} totalResults={totalResults} onPageChange={setPage} />
-      )}
+      {totalResults > 10 && !error && (
+  <Pagination currentPage={page} totalResults={totalResults} onPageChange={setPage} />
+)}
+
     </div>
     </div>
   );
