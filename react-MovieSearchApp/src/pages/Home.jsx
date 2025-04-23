@@ -1,52 +1,52 @@
 import { useState, useEffect } from 'react';
-import { fetchMovies } from '../services/omdbService';
+import { searchMovies } from '../api/omdbService';
 import SearchBar from '../components/SearchBar';
+import FilterDropdown from '../components/FilterDropdown';
 import MovieCard from '../components/MovieCard';
+import Pagination from '../components/Pagination';
 
-function Home() {
-  const [searchTerm, setSearchTerm] = useState('batman');
-  const [type, setType] = useState('');
+export default function Home() {
   const [movies, setMovies] = useState([]);
+  const [type, setType] = useState('');
+  const [query, setQuery] = useState('batman');
+  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const [error, setError] = useState('');
+
+  const fetchData = async () => {
+    try {
+      const data = await searchMovies(query, type, page);
+      if (data.Response === 'True') {
+        setMovies(data.Search);
+        // console.log(data.Search);
+        setTotalResults(parseInt(data.totalResults));
+        setError(null);
+      } else {
+        setMovies([]);
+        setError(data.Error);
+      }
+    } catch (err) {
+      setError('Failed to fetch movies.');
+    }
+  };
 
   useEffect(() => {
-    async function loadMovies() {
-      try {
-        const data = await fetchMovies(searchTerm, page, type);
-        if (data.Response === 'True') {
-          setMovies(data.Search);
-          setTotalResults(parseInt(data.totalResults));
-          setError('');
-        } else {
-          setMovies([]);
-          setError(data.Error);
-        }
-      } catch {
-        setError('Something went wrong. Try again!');
-      }
-    }
-
-    loadMovies();
-  }, [searchTerm, page, type]);
+    fetchData();
+  }, [query, type, page]);
 
   return (
-    <div>
-      <h1>🎬 Movie Search App</h1>
-      <SearchBar {...{ searchTerm, setSearchTerm, type, setType }} />
-      {error && <p>{error}</p>}
-      <div className="movie-grid">
-        {movies.map(movie => <MovieCard key={movie.imdbID} movie={movie} />)}
+    <div  className='bg-gray-800'>
+      <div className="p-4 max-w-5xl mx-auto">
+      <SearchBar onSearch={(q) => {  console.log("Search term is:", q); setQuery(q); setPage(1); }} />
+      <FilterDropdown selectedType={type} onChange={(t) => { setType(t); setPage(1); }} />
+      {error && <p className="text-red-500 mb-4">{error}</p>}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {movies.map((movie) => <MovieCard key={movie.imdbID} movie={movie} />)}
       </div>
       {totalResults > 10 && (
-        <div className="pagination">
-          <button disabled={page === 1} onClick={() => setPage(p => p - 1)}>Previous</button>
-          <span>Page {page}</span>
-          <button disabled={page * 10 >= totalResults} onClick={() => setPage(p => p + 1)}>Next</button>
-        </div>
+        <Pagination currentPage={page} totalResults={totalResults} onPageChange={setPage} />
       )}
+    </div>
     </div>
   );
 }
-export default Home;

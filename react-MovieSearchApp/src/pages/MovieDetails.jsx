@@ -1,42 +1,55 @@
+
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { fetchMovieDetails } from '../services/omdbService';
+import { getMovieDetails } from '../api/omdbService';
 
-function MovieDetails() {
+export default function MovieDetails() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function getMovie() {
+    async function fetchMovie() {
       try {
-        const data = await fetchMovieDetails(id);
+        const data = await getMovieDetails(id);
         if (data.Response === 'True') {
           setMovie(data);
-          setError('');
+          setError(null);
         } else {
           setError(data.Error);
+         
         }
-      } catch {
-        setError('Failed to load movie details.');
+      } catch (err) {
+        setError('Failed to fetch movie details.');
       }
     }
-
-    getMovie();
+    fetchMovie();
   }, [id]);
 
-  if (error) return <p>{error}</p>;
-  if (!movie) return <p>Loading...</p>;
+  if (error) return <div className="p-4 text-red-500">{error}</div>;
+  if (!movie) return <div className="p-4">Loading...</div>;
 
   return (
-    <div className="movie-details">
-      <img src={movie.Poster} alt={movie.Title} />
-      <h2>{movie.Title} ({movie.Year})</h2>
-      <p><strong>Genre:</strong> {movie.Genre}</p>
-      <p><strong>Plot:</strong> {movie.Plot}</p>
-      <p><strong>Actors:</strong> {movie.Actors}</p>
-      <p><strong>Rating:</strong> {movie.imdbRating}</p>
+    <div className='bg-gray-800 '>
+    <div className="p-4 max-w-4xl  mx-auto ">
+      <div className=' flex flex-col justify-center items-center'>
+      <img
+        src={movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x445'}
+        alt={movie.Title}
+        className="w-64 mb-4  "
+      />
+      
+      <div className='bg-green-500  md:max-w-[70%] p-6'>
+      <h1 className="text-2xl font-bold text-center mb-2">{movie.Title}</h1>
+      <p className='font-semibold'><strong>Year:</strong> {movie.Year}</p>
+      <p className='font-semibold'><strong>Genre:</strong> {movie.Genre}</p>
+      <p className='font-semibold'><strong>Plot:</strong> {movie.Plot}</p>
+      <p className='font-semibold'><strong>Director:</strong> {movie.Director}</p>
+      <p className='font-semibold'><strong>Actors:</strong> {movie.Actors}</p>
+      <p className='font-semibold'><strong>IMDb Rating:</strong> {movie.imdbRating}</p>
+      </div>
+      </div>
+      </div>
     </div>
   );
 }
-export default MovieDetails;
